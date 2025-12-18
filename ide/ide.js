@@ -117,26 +117,54 @@ class YiphthachlIDE {
     setupDeviceSelector() {
         const deviceSelect = document.getElementById('device-select');
         const deviceFrame = document.getElementById('device-frame');
+        const previewContainer = document.querySelector('.preview-container');
 
         const deviceProfiles = {
-            iphone14: { width: 390, height: 844, class: 'device-phone' },
-            iphone15pro: { width: 393, height: 852, class: 'device-phone' },
-            pixel8: { width: 412, height: 915, class: 'device-phone' },
-            samsungs24: { width: 412, height: 915, class: 'device-phone' },
-            desktop: { width: '100%', height: '100%', class: 'device-desktop' }
+            iphone14: { width: 390, height: 844, class: 'device-phone', name: 'iPhone 14' },
+            iphone15pro: { width: 393, height: 852, class: 'device-phone dynamic-island', name: 'iPhone 15 Pro' },
+            pixel8: { width: 412, height: 915, class: 'device-phone', name: 'Pixel 8' },
+            samsungs24: { width: 412, height: 915, class: 'device-phone', name: 'Galaxy S24' },
+            desktop: { width: '100%', height: '100%', class: 'device-desktop', name: 'Desktop' }
+        };
+
+        this.currentDevice = 'desktop';
+
+        const updateDeviceScale = () => {
+            if (!deviceFrame.classList.contains('device-phone')) return;
+
+            const containerRect = previewContainer.getBoundingClientRect();
+            const containerWidth = containerRect.width - 40; // padding
+            const containerHeight = containerRect.height - 40;
+
+            const deviceWidth = parseInt(deviceFrame.style.width) + 28; // frame border
+            const deviceHeight = parseInt(deviceFrame.style.height) + 28;
+
+            const scaleX = containerWidth / deviceWidth;
+            const scaleY = containerHeight / deviceHeight;
+            const scale = Math.min(scaleX, scaleY, 1); // Don't scale up, only down
+
+            deviceFrame.style.setProperty('--device-scale', scale.toFixed(3));
+            deviceFrame.classList.add('scale-fit');
         };
 
         deviceSelect.addEventListener('change', () => {
             const profile = deviceProfiles[deviceSelect.value];
+            this.currentDevice = deviceSelect.value;
 
             deviceFrame.className = `device-frame ${profile.class}`;
+            deviceFrame.classList.remove('scale-fit');
 
-            if (profile.class === 'device-phone') {
+            if (profile.class.includes('device-phone')) {
                 deviceFrame.style.width = `${profile.width}px`;
                 deviceFrame.style.height = `${profile.height}px`;
+                // Wait for layout then scale
+                requestAnimationFrame(() => {
+                    updateDeviceScale();
+                });
             } else {
                 deviceFrame.style.width = profile.width;
                 deviceFrame.style.height = profile.height;
+                deviceFrame.style.removeProperty('--device-scale');
             }
         });
 
@@ -146,6 +174,23 @@ class YiphthachlIDE {
                 const width = deviceFrame.style.width;
                 deviceFrame.style.width = deviceFrame.style.height;
                 deviceFrame.style.height = width;
+                requestAnimationFrame(() => {
+                    updateDeviceScale();
+                });
+            }
+        });
+
+        // Re-scale on window resize
+        window.addEventListener('resize', () => {
+            if (deviceFrame.classList.contains('device-phone')) {
+                updateDeviceScale();
+            }
+        });
+
+        // Initial scale
+        requestAnimationFrame(() => {
+            if (deviceFrame.classList.contains('device-phone')) {
+                updateDeviceScale();
             }
         });
     }

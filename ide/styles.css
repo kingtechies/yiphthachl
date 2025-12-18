@@ -353,20 +353,25 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 20px;
     background: linear-gradient(135deg, #1a1f35 0%, #0f172a 100%);
-    overflow: auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.device-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 .device-frame {
     position: relative;
     background: #000;
-    border-radius: 20px;
-    box-shadow:
-        0 0 0 12px #1f2937,
-        0 0 0 14px #374151,
-        0 25px 50px -12px rgba(0, 0, 0, 0.5);
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .device-desktop {
@@ -384,6 +389,83 @@ body {
     width: 375px;
     height: 812px;
     border-radius: 44px;
+    box-shadow:
+        0 0 0 12px #1f2937,
+        0 0 0 14px #374151,
+        0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transform-origin: center center;
+}
+
+/* Dynamic scaling for phone devices */
+.device-phone.scale-fit {
+    transform: scale(var(--device-scale, 0.6));
+}
+
+/* Notch for modern iPhones */
+.device-phone::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 30px;
+    background: #000;
+    border-radius: 0 0 20px 20px;
+    z-index: 10;
+}
+
+/* Dynamic Island for iPhone 14 Pro+ */
+.device-phone.dynamic-island::before {
+    width: 120px;
+    height: 35px;
+    top: 10px;
+    border-radius: 20px;
+}
+
+/* Home indicator */
+.device-phone::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    z-index: 10;
+}
+
+/* Side buttons for phone */
+.device-phone .device-button-power {
+    position: absolute;
+    right: -4px;
+    top: 100px;
+    width: 4px;
+    height: 60px;
+    background: #374151;
+    border-radius: 0 2px 2px 0;
+}
+
+.device-phone .device-button-volume-up {
+    position: absolute;
+    left: -4px;
+    top: 100px;
+    width: 4px;
+    height: 40px;
+    background: #374151;
+    border-radius: 2px 0 0 2px;
+}
+
+.device-phone .device-button-volume-down {
+    position: absolute;
+    left: -4px;
+    top: 150px;
+    width: 4px;
+    height: 40px;
+    background: #374151;
+    border-radius: 2px 0 0 2px;
 }
 
 .preview-iframe {
@@ -391,6 +473,7 @@ body {
     height: 100%;
     border: none;
     background: #0f172a;
+    border-radius: inherit;
 }
 
 /* ==================== OUTPUT ==================== */
