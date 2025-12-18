@@ -1,0 +1,216 @@
+# Yiphthachl Calculator App
+# A simple calculator built with plain English
+
+create an app called "Calculator"
+
+# Remember our calculator state
+remember display as "0"
+remember firstNumber as 0
+remember operator as ""
+remember waitingForSecond as false
+
+# Main screen with calculator layout
+on the main screen
+    use a scaffold with
+        a title bar that says "Calculator"
+            make the background dark gray
+        
+        in the body
+            put a column with
+                # Display
+                a container with
+                    make the background black
+                    make the padding 20
+                    round the corners by 10
+                    make the width full
+                    
+                    a text that shows display
+                        make the size 48
+                        make it bold
+                        color it white
+                        align it right
+                end container
+                
+                add some space of 16
+                
+                # Calculator buttons
+                # Row 1: C, ±, %, ÷
+                a row with
+                    a button that says "C"
+                        make the background gray
+                        when pressed, do clear calculator
+                    
+                    a button that says "±"
+                        make the background gray
+                        when pressed, do toggle sign
+                    
+                    a button that says "%"
+                        make the background gray
+                        when pressed, do calculate percent
+                    
+                    a button that says "÷"
+                        make the background orange
+                        color it white
+                        when pressed, do set operator to "divide"
+                end row
+                
+                add some space of 8
+                
+                # Row 2: 7, 8, 9, ×
+                a row with
+                    a button that says "7"
+                        when pressed, do press digit with "7"
+                    
+                    a button that says "8"
+                        when pressed, do press digit with "8"
+                    
+                    a button that says "9"
+                        when pressed, do press digit with "9"
+                    
+                    a button that says "×"
+                        make the background orange
+                        color it white
+                        when pressed, do set operator to "multiply"
+                end row
+                
+                add some space of 8
+                
+                # Row 3: 4, 5, 6, -
+                a row with
+                    a button that says "4"
+                        when pressed, do press digit with "4"
+                    
+                    a button that says "5"
+                        when pressed, do press digit with "5"
+                    
+                    a button that says "6"
+                        when pressed, do press digit with "6"
+                    
+                    a button that says "-"
+                        make the background orange
+                        color it white
+                        when pressed, do set operator to "subtract"
+                end row
+                
+                add some space of 8
+                
+                # Row 4: 1, 2, 3, +
+                a row with
+                    a button that says "1"
+                        when pressed, do press digit with "1"
+                    
+                    a button that says "2"
+                        when pressed, do press digit with "2"
+                    
+                    a button that says "3"
+                        when pressed, do press digit with "3"
+                    
+                    a button that says "+"
+                        make the background orange
+                        color it white
+                        when pressed, do set operator to "add"
+                end row
+                
+                add some space of 8
+                
+                # Row 5: 0, ., =
+                a row with
+                    a button that says "0"
+                        make the width double
+                        when pressed, do press digit with "0"
+                    
+                    a button that says "."
+                        when pressed, do press decimal
+                    
+                    a button that says "="
+                        make the background orange
+                        color it white
+                        when pressed, do calculate result
+                end row
+            end column
+        end body
+    end scaffold
+end screen
+
+# Function to handle digit press
+define function called "press digit" that takes a digit
+    if waitingForSecond is true
+        set display to the digit
+        set waitingForSecond to false
+    otherwise if display equals "0"
+        set display to the digit
+    otherwise
+        set display to display followed by the digit
+    end if
+    update the screen
+end function
+
+# Function to clear calculator
+define function called "clear calculator"
+    set display to "0"
+    set firstNumber to 0
+    set operator to ""
+    set waitingForSecond to false
+    update the screen
+end function
+
+# Function to toggle positive/negative
+define function called "toggle sign"
+    if display does not equal "0"
+        if display starts with "-"
+            set display to display without the first character
+        otherwise
+            set display to "-" followed by display
+        end if
+        update the screen
+    end if
+end function
+
+# Function to calculate percentage
+define function called "calculate percent"
+    set the result to display as a number divided by 100
+    set display to the result as text
+    update the screen
+end function
+
+# Function to set the operator
+define function called "set operator" that takes an op
+    set firstNumber to display as a number
+    set operator to the op
+    set waitingForSecond to true
+end function
+
+# Function to handle decimal point
+define function called "press decimal"
+    if display does not contain "."
+        set display to display followed by "."
+        update the screen
+    end if
+end function
+
+# Function to calculate the result
+define function called "calculate result"
+    if operator is not empty
+        set secondNumber to display as a number
+        
+        if operator equals "add"
+            set the result to firstNumber plus secondNumber
+        otherwise if operator equals "subtract"
+            set the result to firstNumber minus secondNumber
+        otherwise if operator equals "multiply"
+            set the result to firstNumber multiplied by secondNumber
+        otherwise if operator equals "divide"
+            if secondNumber equals 0
+                set display to "Error"
+                update the screen
+                return
+            end if
+            set the result to firstNumber divided by secondNumber
+        end if
+        
+        set display to the result as text
+        set operator to ""
+        set waitingForSecond to true
+        update the screen
+    end if
+end function

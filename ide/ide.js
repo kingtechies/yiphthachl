@@ -1,6 +1,13 @@
 /**
  * Yiphthachl IDE
  * The web-based development environment for Yiphthachl
+ * 
+ * Features:
+ * - Real-time compilation as you type
+ * - Instant error display with line highlighting
+ * - Syntax highlighting
+ * - Device emulator preview
+ * - Hot reload
  */
 
 import { compile } from '../compiler/index.js';
@@ -13,14 +20,24 @@ class YiphthachlIDE {
         this.outputLog = document.getElementById('output-log');
         this.statusCompile = document.getElementById('status-compile');
         this.statusPosition = document.getElementById('status-position');
+        this.errorOverlay = null;
+        this.errorPanel = null;
 
         this.compileTimeout = null;
         this.isCompiling = false;
+        this.lastSuccessfulHtml = '';
+        this.errors = [];
+
+        // Performance tracking
+        this.compileCount = 0;
+        this.totalCompileTime = 0;
 
         this.init();
     }
 
     init() {
+        this.createErrorOverlay();
+        this.createErrorPanel();
         this.setupEditor();
         this.setupToolbar();
         this.setupDeviceSelector();
@@ -31,24 +48,275 @@ class YiphthachlIDE {
         // Load default code
         this.loadDefaultCode();
 
-        // Initial compile
-        this.scheduleCompile();
+        // Initial compile - immediate
+        this.compile();
 
-        console.log('Yiphthachl IDE initialized');
+        console.log('✨ Yiphthachl IDE initialized - Real-time compilation enabled');
+    }
+
+    /**
+     * Create error overlay for inline error highlighting
+     */
+    createErrorOverlay() {
+        this.errorOverlay = document.createElement('div');
+        this.errorOverlay.id = 'error-overlay';
+        this.errorOverlay.className = 'error-overlay';
+
+        // Insert after editor
+        const editorWrapper = this.editor.parentElement;
+        editorWrapper.style.position = 'relative';
+        editorWrapper.appendChild(this.errorOverlay);
+
+        // Add styles for error overlay
+        const style = document.createElement('style');
+        style.textContent = `
+            .error-overlay {
+                position: absolute;
+                top: 0;
+                left: 60px;
+                right: 0;
+                bottom: 0;
+                pointer-events: none;
+                z-index: 1;
+                overflow: hidden;
+            }
+            .error-line {
+                position: absolute;
+                left: 0;
+                right: 0;
+                height: 24px;
+                background: rgba(239, 68, 68, 0.15);
+                border-left: 3px solid #ef4444;
+            }
+            .error-line::after {
+                content: attr(data-error);
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: #ef4444;
+                color: white;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                max-width: 300px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .error-panel {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                max-height: 120px;
+                background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 1) 100%);
+                border-top: 2px solid #ef4444;
+                overflow-y: auto;
+                z-index: 10;
+                display: none;
+            }
+            .error-panel.visible {
+                display: block;
+            }
+            .error-panel-item {
+                padding: 8px 16px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .error-panel-item:hover {
+                background: rgba(239, 68, 68, 0.2);
+            }
+            .error-icon {
+                color: #ef4444;
+                font-size: 16px;
+            }
+            .error-message {
+                flex: 1;
+                color: #fca5a5;
+                font-size: 13px;
+            }
+            .error-location {
+                color: #94a3b8;
+                font-size: 12px;
+            }
+            .success-indicator {
+                position: fixed;
+                top: 70px;
+                right: 20px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 8px;
+                font-size: 13px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+                z-index: 1000;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+                pointer-events: none;
+            }
+            .success-indicator.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .line-number-error {
+                background: rgba(239, 68, 68, 0.3) !important;
+                color: #ef4444 !important;
+            }
+            @keyframes pulse-error {
+                0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+                50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+            }
+            .status-error {
+                animation: pulse-error 2s infinite;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Create success indicator
+        this.successIndicator = document.createElement('div');
+        this.successIndicator.className = 'success-indicator';
+        this.successIndicator.innerHTML = '<span class="material-icons" style="font-size: 16px;">check_circle</span> Compiled';
+        document.body.appendChild(this.successIndicator);
+    }
+
+    /**
+     * Create error panel at bottom of editor
+     */
+    createErrorPanel() {
+        this.errorPanel = document.createElement('div');
+        this.errorPanel.id = 'error-panel';
+        this.errorPanel.className = 'error-panel';
+
+        const editorWrapper = this.editor.parentElement;
+        editorWrapper.appendChild(this.errorPanel);
+    }
+
+    /**
+     * Show errors inline in the editor
+     */
+    showErrors(errors) {
+        this.errors = errors;
+        this.errorOverlay.innerHTML = '';
+        this.errorPanel.innerHTML = '';
+
+        // Reset line number highlighting
+        const lineNumbersArr = this.lineNumbers.textContent.split('\n');
+
+        if (errors.length === 0) {
+            this.errorPanel.classList.remove('visible');
+            return;
+        }
+
+        this.errorPanel.classList.add('visible');
+
+        errors.forEach((error, index) => {
+            const line = error.line || this.extractLineFromError(error.message);
+            const lineHeight = 24; // Match CSS line-height
+
+            if (line > 0) {
+                // Create line highlight
+                const errorLine = document.createElement('div');
+                errorLine.className = 'error-line';
+                errorLine.style.top = `${(line - 1) * lineHeight}px`;
+                errorLine.setAttribute('data-error', error.message.substring(0, 50));
+                this.errorOverlay.appendChild(errorLine);
+            }
+
+            // Add to error panel
+            const item = document.createElement('div');
+            item.className = 'error-panel-item';
+            item.innerHTML = `
+                <span class="material-icons error-icon">error</span>
+                <span class="error-message">${this.escapeHtml(error.message)}</span>
+                ${line > 0 ? `<span class="error-location">Line ${line}</span>` : ''}
+            `;
+
+            // Click to jump to line
+            if (line > 0) {
+                item.addEventListener('click', () => this.goToLine(line));
+            }
+
+            this.errorPanel.appendChild(item);
+        });
+
+        // Sync scroll position
+        this.errorOverlay.scrollTop = this.editor.scrollTop;
+    }
+
+    /**
+     * Extract line number from error message
+     */
+    extractLineFromError(message) {
+        const match = message.match(/line\s*(\d+)/i);
+        return match ? parseInt(match[1]) : 0;
+    }
+
+    /**
+     * Navigate to specific line in editor
+     */
+    goToLine(lineNumber) {
+        const lines = this.editor.value.split('\n');
+        let charIndex = 0;
+
+        for (let i = 0; i < lineNumber - 1 && i < lines.length; i++) {
+            charIndex += lines[i].length + 1;
+        }
+
+        this.editor.focus();
+        this.editor.setSelectionRange(charIndex, charIndex + (lines[lineNumber - 1]?.length || 0));
+
+        // Scroll to line
+        const lineHeight = 24;
+        this.editor.scrollTop = (lineNumber - 5) * lineHeight;
+    }
+
+    /**
+     * Show success indicator briefly
+     */
+    showSuccessIndicator(duration) {
+        this.successIndicator.querySelector('span:last-child').textContent = ` Compiled in ${duration}ms`;
+        this.successIndicator.classList.add('visible');
+
+        setTimeout(() => {
+            this.successIndicator.classList.remove('visible');
+        }, 2000);
+    }
+
+    /**
+     * Escape HTML for safe display
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     setupEditor() {
         // Line numbers
         this.updateLineNumbers();
 
-        // Editor events
+        // Real-time compilation on input - fast debounce
         this.editor.addEventListener('input', () => {
             this.updateLineNumbers();
             this.scheduleCompile();
         });
 
+        // Sync scroll
         this.editor.addEventListener('scroll', () => {
             this.lineNumbers.scrollTop = this.editor.scrollTop;
+            if (this.errorOverlay) {
+                this.errorOverlay.scrollTop = this.editor.scrollTop;
+            }
         });
 
         this.editor.addEventListener('keydown', (e) => {
@@ -133,15 +401,15 @@ class YiphthachlIDE {
             if (!deviceFrame.classList.contains('device-phone')) return;
 
             const containerRect = previewContainer.getBoundingClientRect();
-            const containerWidth = containerRect.width - 40; // padding
+            const containerWidth = containerRect.width - 40;
             const containerHeight = containerRect.height - 40;
 
-            const deviceWidth = parseInt(deviceFrame.style.width) + 28; // frame border
+            const deviceWidth = parseInt(deviceFrame.style.width) + 28;
             const deviceHeight = parseInt(deviceFrame.style.height) + 28;
 
             const scaleX = containerWidth / deviceWidth;
             const scaleY = containerHeight / deviceHeight;
-            const scale = Math.min(scaleX, scaleY, 1); // Don't scale up, only down
+            const scale = Math.min(scaleX, scaleY, 1);
 
             deviceFrame.style.setProperty('--device-scale', scale.toFixed(3));
             deviceFrame.classList.add('scale-fit');
@@ -157,7 +425,6 @@ class YiphthachlIDE {
             if (profile.class.includes('device-phone')) {
                 deviceFrame.style.width = `${profile.width}px`;
                 deviceFrame.style.height = `${profile.height}px`;
-                // Wait for layout then scale
                 requestAnimationFrame(() => {
                     updateDeviceScale();
                 });
@@ -270,41 +537,66 @@ on the main screen
 end screen`
             },
             {
-                id: 'todo-list',
-                icon: 'checklist',
-                title: 'Todo List',
-                description: 'A task management app',
-                code: `# Todo List App
-create an app called "My Tasks"
+                id: 'calculator',
+                icon: 'calculate',
+                title: 'Calculator',
+                description: 'A simple calculator app',
+                code: `# Calculator App
+create an app called "Calculator"
 
-remember tasks as an empty list
+remember display as "0"
 
 on the main screen
     use a scaffold with
-        a title bar that says "My Tasks"
+        a title bar that says "Calculator"
+            make the background dark gray
         
         in the body
             put a column with
-                a text field
-                    with placeholder "Add a new task..."
+                a container with
+                    make the background black
+                    make the padding 20
+                    
+                    a text that says display
+                        make the size 48
+                        make it bold
+                        color it white
+                end container
                 
                 add some space of 16
                 
-                a button that says "Add Task"
-                    when pressed
-                        add the task to tasks
-                        update the screen
-                    end when
+                a row with
+                    a button that says "7"
+                    a button that says "8"
+                    a button that says "9"
+                    a button that says "÷"
+                        make the background orange
+                end row
                 
-                add some space of 24
+                a row with
+                    a button that says "4"
+                    a button that says "5"
+                    a button that says "6"
+                    a button that says "×"
+                        make the background orange
+                end row
                 
-                show a list of items from tasks
-                    for each task
-                        a card with
-                            a text that says the task
-                        end card
-                    end for
-                end list
+                a row with
+                    a button that says "1"
+                    a button that says "2"
+                    a button that says "3"
+                    a button that says "-"
+                        make the background orange
+                end row
+                
+                a row with
+                    a button that says "0"
+                    a button that says "C"
+                    a button that says "="
+                        make the background orange
+                    a button that says "+"
+                        make the background orange
+                end row
             end column
         end body
     end scaffold
@@ -550,7 +842,7 @@ end screen`
 
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            // Ctrl+Enter - Run
+            // Ctrl+Enter - Run (force compile)
             if (e.ctrlKey && e.key === 'Enter') {
                 e.preventDefault();
                 this.compile();
@@ -634,9 +926,10 @@ end screen
             clearTimeout(this.compileTimeout);
         }
 
+        // Very fast debounce - 150ms for instant feedback
         this.compileTimeout = setTimeout(() => {
             this.compile();
-        }, 500);
+        }, 150);
     }
 
     compile() {
@@ -655,27 +948,56 @@ end screen
             const endTime = performance.now();
             const duration = Math.round(endTime - startTime);
 
+            // Track performance
+            this.compileCount++;
+            this.totalCompileTime += duration;
+
             if (result.success) {
+                // Clear errors
+                this.showErrors([]);
+
                 // Update preview
                 this.previewFrame.srcdoc = result.output.html;
+                this.lastSuccessfulHtml = result.output.html;
 
-                this.statusCompile.textContent = `Compiled in ${duration}ms`;
+                this.statusCompile.textContent = `✓ ${duration}ms`;
                 this.statusCompile.className = 'status-item status-success';
+
+                // Show success indicator
+                this.showSuccessIndicator(duration);
 
                 this.log(`[OK] Compiled successfully in ${duration}ms`, 'success');
             } else {
-                const errorMsg = result.errors.map(e => e.message).join('\n');
+                // Show errors inline
+                const errors = result.errors.map(e => ({
+                    message: e.message,
+                    line: e.line || this.extractLineFromError(e.message)
+                }));
 
-                this.statusCompile.textContent = 'Compile Error';
+                this.showErrors(errors);
+
+                this.statusCompile.textContent = `✗ ${errors.length} error${errors.length > 1 ? 's' : ''}`;
                 this.statusCompile.className = 'status-item status-error';
 
-                this.log(`[ERROR] Compile error: ${errorMsg}`, 'error');
+                // Keep showing last successful output
+                if (this.lastSuccessfulHtml) {
+                    // Optionally show preview with error overlay
+                }
+
+                this.log(`[ERROR] ${errors.length} error(s) found`, 'error');
             }
         } catch (error) {
-            this.statusCompile.textContent = 'Error';
+            const errorObj = {
+                message: error.message,
+                line: this.extractLineFromError(error.message)
+            };
+
+            this.showErrors([errorObj]);
+
+            this.statusCompile.textContent = '✗ Error';
             this.statusCompile.className = 'status-item status-error';
 
-            this.log(`[ERROR] Error: ${error.message}`, 'error');
+            this.log(`[ERROR] ${error.message}`, 'error');
         }
 
         this.isCompiling = false;
@@ -692,7 +1014,7 @@ end screen
         let formatted = [];
         let indentLevel = 0;
 
-        const increaseIndentKeywords = ['screen', 'scaffold', 'body', 'column', 'row', 'card', 'if', 'for', 'while', 'repeat', 'function', 'when', 'list'];
+        const increaseIndentKeywords = ['screen', 'scaffold', 'body', 'column', 'row', 'card', 'if', 'for', 'while', 'repeat', 'function', 'when', 'list', 'container'];
         const decreaseIndentKeywords = ['end'];
 
         for (const line of lines) {
@@ -730,6 +1052,8 @@ end screen
             const blob = new Blob([result.output.html], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             window.open(url, '_blank');
+        } else {
+            this.log('[ERROR] Cannot open - fix errors first', 'error');
         }
     }
 
