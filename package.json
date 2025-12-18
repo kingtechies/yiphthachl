@@ -1,0 +1,59 @@
+{
+  "name": "yiphthachl",
+  "version": "1.0.0",
+  "description": "The Plain English Flutter - Build apps by writing English, not code",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "compile": "node compiler/index.js",
+    "test": "node --experimental-vm-modules node_modules/vitest/vitest.mjs",
+    "lint": "eslint .",
+    "start": "vite --open /ide/index.html"
+  },
+  "keywords": [
+    "programming-language",
+    "flutter",
+    "english",
+    "no-code",
+    "low-code",
+    "ui-framework",
+    "dsl",
+    "web",
+    "frontend"
+  ],
+  "author": "Yiphthachl Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yiphthachl/yiphthachl.git"
+  },
+  "homepage": "https://yiphthachl.dev",
+  "bugs": {
+    "url": "https://github.com/yiphthachl/yiphthachl/issues"
+  },
+  "files": [
+    "dist",
+    "compiler",
+    "runtime",
+    "ide",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/yiphthachl.cjs.js"
+    },
+    "./compiler": "./compiler/index.js",
+    "./runtime": "./runtime/index.js"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

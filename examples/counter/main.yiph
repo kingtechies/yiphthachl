@@ -1,0 +1,108 @@
+# Counter App
+# Demonstrates state management with reactive variables
+
+create an app called "Counter"
+
+# Reactive state
+remember counter as 0
+remember step as 1
+
+on the main screen
+    use a scaffold with
+        a title bar that says "Counter"
+        
+        in the body
+            put a column with
+                add some space of 80
+                
+                in the center
+                    a column with
+                        a text that says "Count"
+                            color it gray
+                            make the size 16
+                            align center
+                        
+                        add some space of 8
+                        
+                        a text that says the counter
+                            make it bold
+                            make the size 72
+                            color it indigo
+                            align center
+                        
+                        add some space of 48
+                        
+                        # Controls
+                        a row with
+                            a button that says "−"
+                                when pressed
+                                    subtract step from counter
+                                    update the screen
+                                end when
+                                make the background rose
+                                make the width 64
+                                make the height 64
+                                round the corners by 32
+                            
+                            add some space of 24
+                            
+                            a button that says "+"
+                                when pressed
+                                    add step to counter
+                                    update the screen
+                                end when
+                                make the background emerald
+                                make the width 64
+                                make the height 64
+                                round the corners by 32
+                        end row
+                        
+                        add some space of 48
+                        
+                        # Step size selector
+                        a text that says "Step size"
+                            color it gray
+                            make the size 14
+                            align center
+                        
+                        add some space of 8
+                        
+                        a row with
+                            a button that says "1"
+                                when pressed
+                                    set step to 1
+                                    update the screen
+                                end when
+                            
+                            add some space of 8
+                            
+                            a button that says "5"
+                                when pressed
+                                    set step to 5
+                                    update the screen
+                                end when
+                            
+                            add some space of 8
+                            
+                            a button that says "10"
+                                when pressed
+                                    set step to 10
+                                    update the screen
+                                end when
+                        end row
+                        
+                        add some space of 48
+                        
+                        # Reset button
+                        a button that says "Reset"
+                            when pressed
+                                set counter to 0
+                                update the screen
+                            end when
+                            color it gray
+                    end column
+                end center
+            end column
+        end body
+    end scaffold
+end screen

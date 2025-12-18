@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yiphthachl IDE - The Plain English Flutter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="ide-container">
+        <!-- Header -->
+        <header class="ide-header">
+            <div class="ide-brand">
+                <span class="ide-logo">🚀</span>
+                <span class="ide-title">Yiphthachl</span>
+                <span class="ide-subtitle">Plain English Flutter</span>
+            </div>
+            
+            <div class="ide-toolbar">
+                <button id="btn-run" class="toolbar-btn toolbar-btn-primary" title="Run (Ctrl+Enter)">
+                    <span class="material-icons">play_arrow</span>
+                    <span>Run</span>
+                </button>
+                <button id="btn-save" class="toolbar-btn" title="Save (Ctrl+S)">
+                    <span class="material-icons">save</span>
+                </button>
+                <button id="btn-format" class="toolbar-btn" title="Format Code">
+                    <span class="material-icons">auto_fix_high</span>
+                </button>
+                <div class="toolbar-divider"></div>
+                <button id="btn-examples" class="toolbar-btn" title="Examples">
+                    <span class="material-icons">folder_open</span>
+                    <span>Examples</span>
+                </button>
+                <button id="btn-docs" class="toolbar-btn" title="Documentation">
+                    <span class="material-icons">menu_book</span>
+                </button>
+            </div>
+
+            <div class="ide-device-selector">
+                <select id="device-select" class="device-dropdown">
+                    <option value="iphone14">iPhone 14</option>
+                    <option value="iphone15pro">iPhone 15 Pro</option>
+                    <option value="pixel8">Pixel 8</option>
+                    <option value="samsungs24">Samsung S24</option>
+                    <option value="desktop" selected>Desktop</option>
+                </select>
+                <button id="btn-rotate" class="toolbar-btn" title="Rotate Device">
+                    <span class="material-icons">screen_rotation</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="ide-main">
+            <!-- Code Editor Panel -->
+            <div class="ide-panel ide-editor-panel">
+                <div class="panel-header">
+                    <div class="panel-tabs">
+                        <button class="panel-tab active" data-file="main.yiph">
+                            <span class="material-icons">code</span>
+                            main.yiph
+                        </button>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="panel-action" id="btn-new-file" title="New File">
+                            <span class="material-icons">add</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="editor-container">
+                    <div class="editor-line-numbers" id="line-numbers"></div>
+                    <textarea id="code-editor" class="editor-textarea" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+                    <div class="editor-overlay" id="editor-overlay"></div>
+                </div>
+            </div>
+
+            <!-- Resize Handle -->
+            <div class="resize-handle" id="resize-handle"></div>
+
+            <!-- Preview Panel -->
+            <div class="ide-panel ide-preview-panel">
+                <div class="panel-header">
+                    <div class="panel-tabs">
+                        <button class="panel-tab active">
+                            <span class="material-icons">visibility</span>
+                            Preview
+                        </button>
+                        <button class="panel-tab" id="tab-output">
+                            <span class="material-icons">terminal</span>
+                            Output
+                        </button>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="panel-action" id="btn-refresh" title="Refresh">
+                            <span class="material-icons">refresh</span>
+                        </button>
+                        <button class="panel-action" id="btn-open-new" title="Open in New Tab">
+                            <span class="material-icons">open_in_new</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="preview-container" id="preview-container">
+                    <div class="device-frame device-desktop" id="device-frame">
+                        <iframe id="preview-frame" class="preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+                    </div>
+                </div>
+                <div class="output-container" id="output-container" style="display: none;">
+                    <div id="output-log" class="output-log"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Bar -->
+        <footer class="ide-status">
+            <div class="status-left">
+                <span class="status-item" id="status-position">Ln 1, Col 1</span>
+                <span class="status-item" id="status-language">Yiphthachl</span>
+            </div>
+            <div class="status-right">
+                <span class="status-item status-success" id="status-compile">Ready</span>
+                <span class="status-item" id="status-time"></span>
+            </div>
+        </footer>
+
+        <!-- Examples Modal -->
+        <div class="modal" id="examples-modal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Example Apps</h2>
+                    <button class="modal-close" id="close-examples">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="examples-grid" id="examples-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="ide.js"></script>
+</body>
+</html>

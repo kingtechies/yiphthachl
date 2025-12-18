@@ -1,0 +1,93 @@
+# Todo App
+# A simple task management application
+
+create an app called "My Tasks"
+
+# State
+remember tasks as []
+remember new task text as ""
+
+on the main screen
+    use a scaffold with
+        a title bar that says "📝 My Tasks"
+        
+        in the body
+            put a column with
+                # Input section
+                a row with
+                    a text field
+                        with placeholder "What needs to be done?"
+                        when changed, set new task text to the value
+                    
+                    add some space of 12
+                    
+                    a button that says "Add"
+                        when pressed
+                            add new task text to tasks
+                            set new task text to ""
+                            update the screen
+                        end when
+                        make the background emerald
+                end row
+                
+                add some space of 24
+                
+                # Task count
+                a text that says "You have " followed by the number of tasks followed by " tasks"
+                    color it gray
+                    make the size 14
+                
+                add some space of 16
+                
+                # Task list
+                show a list of items from tasks
+                    for each task
+                        a card with
+                            a row with
+                                a checkbox
+                                
+                                add some space of 12
+                                
+                                a text that says the task
+                                    make the size 16
+                            end row
+                        end card
+                        
+                        add some space of 8
+                    end for
+                end list
+                
+                # Empty state
+                if the number of tasks equals 0
+                    add some space of 48
+                    
+                    in the center
+                        a column with
+                            a text that says "✨"
+                                make the size 48
+                                align center
+                            
+                            add some space of 16
+                            
+                            a text that says "No tasks yet!"
+                                color it gray
+                                make the size 18
+                                align center
+                            
+                            a text that says "Add your first task above"
+                                color it gray
+                                make the size 14
+                                align center
+                        end column
+                    end center
+                end if
+            end column
+        end body
+        
+        a bottom navigation with
+            an item called "Tasks" with icon "check_circle"
+            an item called "Calendar" with icon "calendar_today"
+            an item called "Settings" with icon "settings"
+        end bottom navigation
+    end scaffold
+end screen

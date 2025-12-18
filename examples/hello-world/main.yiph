@@ -1,0 +1,43 @@
+# Hello World App
+# The simplest Yiphthachl application
+
+create an app called "Hello World"
+
+on the main screen
+    use a scaffold with
+        a title bar that says "Welcome"
+        
+        in the body
+            put a column with
+                add some space of 48
+                
+                in the center
+                    a text that says "🚀"
+                        make the size 64
+                end center
+                
+                add some space of 24
+                
+                a text that says "Hello, World!"
+                    make it bold
+                    make the size 32
+                    color it white
+                    align center
+                
+                add some space of 8
+                
+                a text that says "Welcome to Yiphthachl"
+                    color it gray
+                    make the size 16
+                    align center
+                
+                add some space of 48
+                
+                a button that says "Get Started"
+                    when pressed, show message "Let's build something amazing! 🎉"
+                    make the background indigo
+                    round the corners by 12
+            end column
+        end body
+    end scaffold
+end screen
