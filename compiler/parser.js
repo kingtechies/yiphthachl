@@ -876,10 +876,17 @@ export class Parser {
         // Get text content
         if (this.check(TokenType.STRING)) {
             content = new AST.StringLiteralNode(this.advance().value);
-        } else if (this.peekIs('that', 'says', 'saying')) {
+        } else if (this.peekIs('that', 'says', 'saying', 'shows', 'displaying')) {
             this.advance();
+            // Skip additional connecting words like "the"
+            while (this.peekIs('the', 'a', 'an')) {
+                this.advance();
+            }
             if (this.check(TokenType.STRING)) {
                 content = new AST.StringLiteralNode(this.advance().value);
+            } else if (this.check(TokenType.IDENTIFIER)) {
+                // Handle variable references like "counter" or "display"
+                content = this.parseIdentifierExpression();
             }
         }
 

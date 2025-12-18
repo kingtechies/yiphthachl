@@ -295,8 +295,32 @@ document.addEventListener('DOMContentLoaded', function() {
     generateText(node) {
         const textId = this.nextId('text');
         const styles = this.generateTextStyles(node.styles);
-        const content = this.generateExpression(node.content);
 
+        // Check if content is a variable reference (reactive)
+        if (node.content.type === 'VariableReference') {
+            const varName = node.content.name;
+
+            // For state variables, create reactive text
+            if (this.stateVariables.has(varName)) {
+                this.js.push(`
+// Update text for ${textId}
+function update_${textId}() {
+    const el = document.getElementById('${textId}');
+    if (el) el.textContent = get_${varName}();
+}
+// Register update function
+const _orig_set_${varName} = set_${varName};
+set_${varName} = function(v) { _orig_set_${varName}(v); update_${textId}(); };
+`);
+                return `<span id="${textId}" class="yiph-text" style="${styles}">\${get_${varName}()}</span>`;
+            }
+
+            // Regular variable
+            return `<span id="${textId}" class="yiph-text" style="${styles}">\${${varName}}</span>`;
+        }
+
+        // Regular string content
+        const content = this.generateExpression(node.content);
         return `<span id="${textId}" class="yiph-text" style="${styles}">${content}</span>`;
     }
 
