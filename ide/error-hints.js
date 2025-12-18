@@ -200,7 +200,7 @@ export function createErrorDisplay(error) {
     const container = document.createElement('div');
     container.className = 'yiph-error-display';
     container.innerHTML = `
-        <div class="yiph-error-icon">❌</div>
+        <div class="yiph-error-icon"><span class="material-icons">error</span></div>
         <div class="yiph-error-content">
             <div class="yiph-error-message">${friendly.message}</div>
             <div class="yiph-error-hint">${friendly.hint}</div>

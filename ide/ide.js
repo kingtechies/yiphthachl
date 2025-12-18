@@ -34,7 +34,7 @@ class YiphthachlIDE {
         // Initial compile
         this.scheduleCompile();
 
-        console.log('🚀 Yiphthachl IDE initialized');
+        console.log('Yiphthachl IDE initialized');
     }
 
     setupEditor() {
@@ -154,7 +154,7 @@ class YiphthachlIDE {
         const examples = [
             {
                 id: 'hello-world',
-                icon: '👋',
+                icon: 'waving_hand',
                 title: 'Hello World',
                 description: 'The simplest Yiphthachl app',
                 code: `# Hello World App
@@ -182,7 +182,7 @@ end screen`
             },
             {
                 id: 'counter',
-                icon: '🔢',
+                icon: 'pin',
                 title: 'Counter App',
                 description: 'A simple counter with state',
                 code: `# Counter App
@@ -226,7 +226,7 @@ end screen`
             },
             {
                 id: 'todo-list',
-                icon: '✅',
+                icon: 'checklist',
                 title: 'Todo List',
                 description: 'A task management app',
                 code: `# Todo List App
@@ -267,7 +267,7 @@ end screen`
             },
             {
                 id: 'profile',
-                icon: '👤',
+                icon: 'person',
                 title: 'Profile Screen',
                 description: 'A user profile layout',
                 code: `# Profile Screen
@@ -329,7 +329,7 @@ end screen`
             },
             {
                 id: 'login',
-                icon: '🔐',
+                icon: 'lock',
                 title: 'Login Form',
                 description: 'A login screen with inputs',
                 code: `# Login Screen
@@ -379,7 +379,7 @@ end screen`
             },
             {
                 id: 'weather',
-                icon: '🌤️',
+                icon: 'wb_sunny',
                 title: 'Weather Card',
                 description: 'A weather information card',
                 code: `# Weather App
@@ -447,7 +447,7 @@ end screen`
             const card = document.createElement('div');
             card.className = 'example-card';
             card.innerHTML = `
-                <div class="example-card-icon">${example.icon}</div>
+                <div class="example-card-icon"><span class="material-icons">${example.icon}</span></div>
                 <div class="example-card-title">${example.title}</div>
                 <div class="example-card-desc">${example.description}</div>
             `;
@@ -531,7 +531,7 @@ end screen`
         if (savedCode) {
             this.editor.value = savedCode;
         } else {
-            this.editor.value = `# Welcome to Yiphthachl! 🚀
+            this.editor.value = `# Welcome to Yiphthachl!
 # The Plain English Flutter
 
 create an app called "My First App"
@@ -617,20 +617,20 @@ end screen
                 this.statusCompile.textContent = `Compiled in ${duration}ms`;
                 this.statusCompile.className = 'status-item status-success';
 
-                this.log(`✅ Compiled successfully in ${duration}ms`, 'success');
+                this.log(`[OK] Compiled successfully in ${duration}ms`, 'success');
             } else {
                 const errorMsg = result.errors.map(e => e.message).join('\n');
 
                 this.statusCompile.textContent = 'Compile Error';
                 this.statusCompile.className = 'status-item status-error';
 
-                this.log(`❌ Compile error: ${errorMsg}`, 'error');
+                this.log(`[ERROR] Compile error: ${errorMsg}`, 'error');
             }
         } catch (error) {
             this.statusCompile.textContent = 'Error';
             this.statusCompile.className = 'status-item status-error';
 
-            this.log(`❌ Error: ${error.message}`, 'error');
+            this.log(`[ERROR] Error: ${error.message}`, 'error');
         }
 
         this.isCompiling = false;
@@ -638,7 +638,7 @@ end screen
 
     saveCode() {
         localStorage.setItem('yiphthachl_code', this.editor.value);
-        this.log('💾 Code saved to browser storage', 'success');
+        this.log('[SAVED] Code saved to browser storage', 'success');
     }
 
     formatCode() {
@@ -674,7 +674,7 @@ end screen
         this.editor.value = formatted.join('\n');
         this.updateLineNumbers();
         this.compile();
-        this.log('🪄 Code formatted', 'success');
+        this.log('[FORMAT] Code formatted', 'success');
     }
 
     openInNewTab() {

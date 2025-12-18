@@ -9,7 +9,7 @@ remember new task text as ""
 
 on the main screen
     use a scaffold with
-        a title bar that says "📝 My Tasks"
+        a title bar that says "My Tasks"
         
         in the body
             put a column with
@@ -63,9 +63,9 @@ on the main screen
                     
                     in the center
                         a column with
-                            a text that says "✨"
+                            an icon of "task_alt"
                                 make the size 48
-                                align center
+                                color it gray
                             
                             add some space of 16
                             

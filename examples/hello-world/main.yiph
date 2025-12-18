@@ -12,8 +12,10 @@ on the main screen
                 add some space of 48
                 
                 in the center
-                    a text that says "🚀"
+                    a text that says "Y"
                         make the size 64
+                        make it bold
+                        color it indigo
                 end center
                 
                 add some space of 24
@@ -34,7 +36,7 @@ on the main screen
                 add some space of 48
                 
                 a button that says "Get Started"
-                    when pressed, show message "Let's build something amazing! 🎉"
+                    when pressed, show message "Let's build something amazing!"
                     make the background indigo
                     round the corners by 12
             end column

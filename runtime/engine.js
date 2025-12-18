@@ -36,7 +36,7 @@ export class YiphthachlRuntime {
         this.setupGlobalListeners();
 
         this.isInitialized = true;
-        console.log('🚀 Yiphthachl Runtime initialized');
+        console.log('Yiphthachl Runtime initialized');
     }
 
     /**

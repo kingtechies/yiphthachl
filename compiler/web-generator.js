@@ -110,7 +110,7 @@ export class WebGenerator {
         this.js.push(`
 // Initialize app: ${node.name}
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 ${node.name} initialized');
+    console.log('${node.name} initialized');
     initializeApp();
 });
 `);

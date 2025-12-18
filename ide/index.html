@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +10,17 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div id="app" class="ide-container">
         <!-- Header -->
         <header class="ide-header">
             <div class="ide-brand">
-                <span class="ide-logo">🚀</span>
+                <span class="ide-logo">Y</span>
                 <span class="ide-title">Yiphthachl</span>
                 <span class="ide-subtitle">Plain English Flutter</span>
             </div>
-            
+
             <div class="ide-toolbar">
                 <button id="btn-run" class="toolbar-btn toolbar-btn-primary" title="Run (Ctrl+Enter)">
                     <span class="material-icons">play_arrow</span>
@@ -73,7 +75,8 @@
                 </div>
                 <div class="editor-container">
                     <div class="editor-line-numbers" id="line-numbers"></div>
-                    <textarea id="code-editor" class="editor-textarea" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+                    <textarea id="code-editor" class="editor-textarea" spellcheck="false" autocomplete="off"
+                        autocorrect="off" autocapitalize="off"></textarea>
                     <div class="editor-overlay" id="editor-overlay"></div>
                 </div>
             </div>
@@ -105,7 +108,8 @@
                 </div>
                 <div class="preview-container" id="preview-container">
                     <div class="device-frame device-desktop" id="device-frame">
-                        <iframe id="preview-frame" class="preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+                        <iframe id="preview-frame" class="preview-iframe"
+                            sandbox="allow-scripts allow-same-origin"></iframe>
                     </div>
                 </div>
                 <div class="output-container" id="output-container" style="display: none;">
@@ -145,4 +149,5 @@
 
     <script type="module" src="ide.js"></script>
 </body>
+
 </html>

@@ -14,8 +14,8 @@ export const VERSION = '1.0.0';
 export const CODENAME = 'Genesis';
 
 console.log(`
-🚀 Yiphthachl v${VERSION} "${CODENAME}"
-   The Plain English Flutter
-   
-   Build apps by writing English, not code.
+Yiphthachl v${VERSION} "${CODENAME}"
+The Plain English Flutter
+
+Build apps by writing English, not code.
 `);
