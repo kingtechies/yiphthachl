@@ -408,6 +408,3 @@ export { Tokenizer, Token, TokenType } from './tokenizer.js';
 export { Parser, ParseError } from './parser.js';
 export { WebGenerator } from './web-generator.js';
 export * as AST from './ast-nodes.js';
-
-// Export compile targets enum
-export { CompileTarget };
